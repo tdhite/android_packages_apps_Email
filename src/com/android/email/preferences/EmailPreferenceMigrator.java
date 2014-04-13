@@ -91,6 +91,14 @@ public class EmailPreferenceMigrator extends BasePreferenceMigrator {
                 mailPrefs.setDefaultReplyAll(replyAll);
             }
 
+            @SuppressWarnings("deprecation")
+            final boolean hasEnableBypassPolicyRequirements = preferences.hasEnableBypassPolicyRequirements();
+            if (hasEnableBypassPolicyRequirements) {
+                @SuppressWarnings("deprecation")
+                final boolean enableBypassPolicyRequirements = preferences.getEnableBypassPolicyRequirements();
+                mailPrefs.setConversationListSwipeEnabled(enableBypassPolicyRequirements);
+            }
+
             // Move folder notification settings
             for (final Account account : accounts) {
                 // Get the emailcommon account

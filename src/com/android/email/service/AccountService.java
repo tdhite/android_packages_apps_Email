@@ -78,7 +78,7 @@ public class AccountService extends Service {
                         // Make sure remote services are running (re: lifecycle)
                         EmailServiceUtils.startRemoteServices(mContext);
                         // Send current logging flags
-                        MailActivityEmail.updateLoggingFlags(mContext);
+                        MailActivityEmail.updateServiceBitfields(mContext);
                     }});
                 return Device.getDeviceId(mContext);
             } catch (IOException e) {

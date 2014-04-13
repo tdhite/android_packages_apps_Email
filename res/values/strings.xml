@@ -820,4 +820,8 @@
 
     <!-- Provider name for widgets -->
     <string name="widget_provider" translatable="false">com.android.email.provider.WidgetProvider</string>
+
+    <!-- Policy Bypass Option -->
+    <string name="general_preference_enable_bypass_policy_requirements_summary">Ignore policy required by email servers, for example to allow remote data wipes.</string>
+    <string name="general_preference_enable_bypass_policy_requirements_title">Bypass Policy Requirements</string>
 </resources>

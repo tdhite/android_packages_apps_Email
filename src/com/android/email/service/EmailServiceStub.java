@@ -27,6 +27,7 @@ import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.android.email.NotificationController;
+import com.android.email.Preferences;
 import com.android.email.mail.Sender;
 import com.android.email.mail.Store;
 import com.android.email.provider.AccountReconciler;
@@ -462,7 +463,7 @@ public abstract class EmailServiceStub extends IEmailService.Stub implements IEm
             for (final int type : Mailbox.REQUIRED_FOLDER_TYPES) {
                 if (Mailbox.findMailboxOfType(mContext, accountId, type) == Mailbox.NO_MAILBOX) {
                     final Mailbox mailbox = Mailbox.newSystemMailbox(mContext, accountId, type);
-                    mailbox.save(mContext);
+                    mailbox.save(mContext, Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements());
                     if (type == Mailbox.TYPE_INBOX) {
                         inboxId = mailbox.mId;
                     }
@@ -550,7 +551,7 @@ public abstract class EmailServiceStub extends IEmailService.Stub implements IEm
     }
 
     @Override
-    public void setLogging(int on) throws RemoteException {
+    public void setServiceBitfields(int bitfield) throws RemoteException {
         // Not required
     }
 

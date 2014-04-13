@@ -35,6 +35,7 @@ import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.android.email.activity.setup.AccountSecurity;
 import com.android.email.activity.setup.AccountSettings;
@@ -505,14 +506,19 @@ public class NotificationController {
      * Show (or update) a security changed notification. If tapped, the user is taken to the
      * account settings screen where he can view the list of enforced policies
      */
-    public void showSecurityChangedNotification(Account account) {
-        Intent intent = AccountSettings.createAccountSettingsIntent(account.mId, null, null);
-        String accountName = account.getDisplayName();
-        String ticker =
-            mContext.getString(R.string.security_changed_ticker_fmt, accountName);
-        String title = mContext.getString(R.string.security_notification_content_change_title);
-        showNotification(account.mId, ticker, title, accountName, intent,
-                (int)(NOTIFICATION_ID_BASE_SECURITY_CHANGED + account.mId));
+    public void showSecurityChangedNotification(Account account, boolean enableBypass) {
+        if (enableBypass) {
+            Log.i(LOG_TAG, "Bypassing showSecurityChangedNotification");
+        } else {
+            Log.i(LOG_TAG, "NOT bypassing showSecurityChangedNotification");
+            Intent intent = AccountSettings.createAccountSettingsIntent(account.mId, null, null);
+            String accountName = account.getDisplayName();
+            String ticker =
+                mContext.getString(R.string.security_changed_ticker_fmt, accountName);
+            String title = mContext.getString(R.string.security_notification_content_change_title);
+            showNotification(account.mId, ticker, title, accountName, intent,
+                    (int)(NOTIFICATION_ID_BASE_SECURITY_CHANGED + account.mId));
+        }
     }
 
     /**

@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.android.email.LegacyConversions;
+import com.android.email.Preferences;
 import com.android.emailcommon.Logging;
 import com.android.emailcommon.internet.MimeUtility;
 import com.android.emailcommon.mail.Message;
@@ -161,7 +162,7 @@ public class Utilities {
                     att.mMessageKey = localMessage.mId;
                     att.mAccountKey = localMessage.mAccountKey;
                     att.mFlags = Attachment.FLAG_DUMMY_ATTACHMENT;
-                    att.save(context);
+                    att.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
                     localMessage.mFlagAttachment = true;
                 }
 
@@ -190,7 +191,7 @@ public class Utilities {
         if (content.isSaved()) {
             content.update(context, content.toContentValues());
         } else {
-            content.save(context);
+            content.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
         }
     }
 

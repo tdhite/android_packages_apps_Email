@@ -19,6 +19,7 @@ package com.android.email.mail.store;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.android.email.Preferences;
 import com.android.email.mail.Store;
 import com.android.email.mail.transport.MailTransport;
 import com.android.email2.ui.MailActivityEmail;
@@ -112,7 +113,7 @@ public class Pop3Store extends Store {
         if (mailbox.isSaved()) {
             mailbox.update(mContext, mailbox.toContentValues());
         } else {
-            mailbox.save(mContext);
+            mailbox.save(mContext, Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements());
         }
         return new Folder[] { getFolder(mailbox.mServerId) };
     }

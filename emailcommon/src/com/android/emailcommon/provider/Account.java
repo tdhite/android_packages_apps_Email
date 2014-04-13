@@ -726,7 +726,7 @@ public final class Account extends EmailContent implements AccountColumns, Parce
      * @see com.android.email.provider.EmailContent#save(android.content.Context)
      */
     @Override
-    public Uri save(Context context) {
+    public Uri save(Context context, boolean enableBypass) {
         if (isSaved()) {
             throw new UnsupportedOperationException();
         }
@@ -734,7 +734,7 @@ public final class Account extends EmailContent implements AccountColumns, Parce
         // possible, and (b) override (and throw) if anyone tries to call save() or update()
         // directly for Account, which are unsupported.
         if (mHostAuthRecv == null && mHostAuthSend == null && mPolicy != null) {
-            return super.save(context);
+            return super.save(context, enableBypass);
         }
 
         int index = 0;

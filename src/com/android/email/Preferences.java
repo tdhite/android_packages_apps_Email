@@ -82,6 +82,8 @@ public class Preferences {
     public static final String CONV_LIST_ICON_NONE = "none";
     public static final String CONV_LIST_ICON_DEFAULT = CONV_LIST_ICON_SENDER_IMAGE;
 
+    public static final String ENABLE_BYPASS_POLICY_REQUIREMENTS = "enable_bypass_policy_requirements";
+
     private static Preferences sPreferences;
 
     private final SharedPreferences mSharedPreferences;
@@ -137,6 +139,15 @@ public class Preferences {
 
     public boolean getEnableExchangeFileLogging() {
         return mSharedPreferences.getBoolean(ENABLE_EXCHANGE_FILE_LOGGING, false);
+    }
+
+    public void setEnableBypassPolicyRequirements(boolean value) {
+        mSharedPreferences.edit()
+                .putBoolean(ENABLE_BYPASS_POLICY_REQUIREMENTS, value).apply();
+    }
+
+    public boolean getEnableBypassPolicyRequirements() {
+        return mSharedPreferences.getBoolean(ENABLE_BYPASS_POLICY_REQUIREMENTS, false);
     }
 
     public void setInhibitGraphicsAcceleration(boolean value) {
@@ -237,6 +248,12 @@ public class Preferences {
     @Deprecated
     public boolean getReplyAll() {
         return mSharedPreferences.getBoolean(REPLY_ALL, false);
+    }
+
+    /** @deprecated Only used for migration */
+    @Deprecated
+    public boolean hasEnableBypassPolicyRequirements() {
+        return mSharedPreferences.contains(ENABLE_BYPASS_POLICY_REQUIREMENTS);
     }
 
     public int getTextZoom() {

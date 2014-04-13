@@ -4378,7 +4378,7 @@ public class EmailProvider extends ContentProvider {
                 box.mLastTouchedTime = Mailbox.SENT_DEFAULT_TOUCH_TIME;
                 break;
         }
-        box.save(context);
+        box.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
         return box;
     }
 
@@ -4525,7 +4525,7 @@ public class EmailProvider extends ContentProvider {
         }
         // Save it or update it...
         if (!msg.isSaved()) {
-            msg.save(context);
+            msg.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
         } else {
             // This is tricky due to how messages/attachments are saved; rather than putz with
             // what's changed, we'll delete/re-add them
@@ -5384,7 +5384,7 @@ public class EmailProvider extends ContentProvider {
             m.mType = Mailbox.TYPE_SEARCH;
             m.mFlags = Mailbox.FLAG_HOLDS_MAIL;
             m.mParentKey = Mailbox.NO_MAILBOX;
-            m.save(context);
+            m.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
         }
         return m;
     }

@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.android.emailcommon.utility.TextUtilities;
 import com.android.emailcommon.utility.Utility;
@@ -165,9 +166,9 @@ public final class Policy extends EmailContent implements EmailContent.PolicyCol
 
     // We override this method to insure that we never write invalid policy data to the provider
     @Override
-    public Uri save(Context context) {
-        normalize();
-        return super.save(context);
+    public Uri save(Context context, boolean enableBypass) {
+        normalize(enableBypass);
+        return super.save(context, enableBypass);
     }
 
     /**
@@ -215,7 +216,7 @@ public final class Policy extends EmailContent implements EmailContent.PolicyCol
      * Normalize the Policy.  If the password mode is "none", zero out all password-related fields;
      * zero out complex characters for simple passwords.
      */
-    public void normalize() {
+    public void normalize(boolean enableBypass) {
         if (mPasswordMode == PASSWORD_MODE_NONE) {
             mPasswordMaxFails = 0;
             mMaxScreenLockTime = 0;
@@ -233,6 +234,20 @@ public final class Policy extends EmailContent implements EmailContent.PolicyCol
             if (mPasswordMode == PASSWORD_MODE_SIMPLE) {
                 mPasswordComplexChars = 0;
             }
+        }
+
+        if (enableBypass) {
+            Log.i(TAG, "Bypassing normalize on Policy " + this.toString());
+            mPasswordMode = PASSWORD_MODE_NONE;
+            mRequireRemoteWipe = false;
+            mRequireEncryption = false;
+            mRequireEncryptionExternal = false;
+            mRequireManualSyncWhenRoaming = false;
+            mDontAllowCamera = false;
+            mDontAllowAttachments = false;
+            mDontAllowHtml = false;
+        } else {
+            Log.i(TAG, "NOT bypsssing normalize on Policy " + this.toString());
         }
     }
 

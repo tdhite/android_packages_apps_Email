@@ -39,7 +39,7 @@ interface IEmailService {
     boolean deleteFolder(long accountId, String name);
     boolean renameFolder(long accountId, String oldName, String newName);
 
-    oneway void setLogging(int on);
+    oneway void setServiceBitfields(int bitfield);
 
     oneway void hostChanged(long accountId);
 

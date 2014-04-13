@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Base64DataException;
 
+import com.android.email.Preferences;
 import com.android.email.mail.store.ImapStore.ImapException;
 import com.android.email.mail.store.ImapStore.ImapMessage;
 import com.android.email.mail.store.imap.ImapConstants;
@@ -1178,7 +1179,7 @@ class ImapFolder extends Folder {
     void save(Context context) {
         final Mailbox mailbox = mMailbox;
         if (!mailbox.isSaved()) {
-            mailbox.save(context);
+            mailbox.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
             mHash = mailbox.getHashes();
         } else {
             Object[] hash = mailbox.getHashes();

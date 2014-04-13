@@ -352,7 +352,7 @@ public class ImapStore extends Store {
             // outside of #saveMailboxList()
             folder.mHash = mailbox.getHashes();
             // We must save this here to make sure we have a valid ID for later
-            mailbox.save(mContext);
+            mailbox.save(mContext, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
         }
         folder.mMailbox = mailbox;
         return folder;

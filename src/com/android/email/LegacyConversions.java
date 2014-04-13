@@ -266,7 +266,7 @@ public class LegacyConversions {
 
         // Save the attachment (so far) in order to obtain an id
         if (!attachmentFoundInDb) {
-            localAttachment.save(context);
+            localAttachment.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
         }
 
         // If an attachment body was actually provided, we need to write the file now

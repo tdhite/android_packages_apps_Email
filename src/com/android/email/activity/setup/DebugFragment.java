@@ -121,7 +121,7 @@ public class DebugFragment extends Fragment implements OnCheckedChangeListener,
                 break;
         }
 
-        MailActivityEmail.updateLoggingFlags(getActivity());
+        MailActivityEmail.updateServiceBitfields(getActivity());
     }
 
     @Override

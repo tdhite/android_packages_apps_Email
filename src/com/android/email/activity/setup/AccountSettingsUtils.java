@@ -24,6 +24,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.widget.EditText;
 
+import com.android.email.Preferences;
 import com.android.email.R;
 import com.android.email.provider.AccountBackupRestore;
 import com.android.emailcommon.Logging;
@@ -53,7 +54,7 @@ public class AccountSettingsUtils {
      */
     public static void commitSettings(Context context, Account account) {
         if (!account.isSaved()) {
-            account.save(context);
+            account.save(context, Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
 
             // Set up default quick responses here...
             String[] defaultQuickResponses =

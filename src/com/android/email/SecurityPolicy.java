@@ -31,6 +31,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.android.email.provider.EmailProvider;
 import com.android.email.service.EmailBroadcastProcessorService;
@@ -220,8 +221,7 @@ public class SecurityPolicy {
      * clear the aggregate policy (so it can be recomputed) and set the policies in the DPM
      */
     public synchronized void policiesUpdated() {
-        mAggregatePolicy = null;
-        setActivePolicies();
+        /* do nothing */
     }
 
     /**
@@ -245,6 +245,12 @@ public class SecurityPolicy {
      * @return true if the requested policies are active, false if not.
      */
     public boolean isActive(Policy policy) {
+        if (Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements()) {
+            Log.i(TAG, "Bypassing isActive check on Policy " + policy == null ? "null" : policy.toString());
+            return true;
+        }
+        Log.i(TAG, "NOT bypassing isActive check on Policy " + policy == null ? "null" : policy.toString());
+
         int reasons = getInactiveReasons(policy);
         if (MailActivityEmail.DEBUG && (reasons != 0)) {
             StringBuilder sb = new StringBuilder("isActive for " + policy + ": ");
@@ -315,10 +321,18 @@ public class SecurityPolicy {
      * is needed (typically, by the user) before the required security polices are fully active.
      */
     public int getInactiveReasons(Policy policy) {
+        if (Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements()) {
+            Log.i(TAG, "Bypassing getInactiveReasons check on Policy " + policy == null ? "null" : policy.toString());
+            return 0;
+        }
+
         // select aggregate set if needed
         if (policy == null) {
             policy = getAggregatePolicy();
         }
+
+        Log.i(TAG, "NOT bypassing getInactiveReasons check on Policy " + policy.toString());
+
         // quick check for the "empty set" of no policies
         if (policy == Policy.NO_POLICY) {
             return 0;
@@ -391,7 +405,7 @@ public class SecurityPolicy {
             // If we made it all the way, reasons == 0 here.  Otherwise it's a list of grievances.
             return reasons;
         }
-        // return false, not active
+         // return false, not active
         return INACTIVE_NEED_ACTIVATION;
     }
 
@@ -401,6 +415,12 @@ public class SecurityPolicy {
      * we only proceed if we are already active as an admin.
      */
     public void setActivePolicies() {
+        if (Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements()) {
+            Log.i(TAG, "Bypassing setActivePolicies.");
+            return;
+        }
+        Log.i(TAG, "NOT bypassing setActivePolicies.");
+
         DevicePolicyManager dpm = getDPM();
         // compute aggregate set of policies
         Policy aggregatePolicy = getAggregatePolicy();
@@ -527,7 +547,7 @@ public class SecurityPolicy {
 
         // Make sure this is a valid policy set
         if (policy != null) {
-            policy.normalize();
+            policy.normalize(Preferences.getPreferences(context).getEnableBypassPolicyRequirements());
             // Add the new policy (no account will yet reference this)
             ops.add(ContentProviderOperation.newInsert(
                     Policy.CONTENT_URI).withValues(policy.toContentValues()).build());
@@ -623,7 +643,7 @@ public class SecurityPolicy {
                         + " changed.");
                 // Notify that policies changed
                 NotificationController.getInstance(mContext).showSecurityChangedNotification(
-                        account);
+                        account, Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements());
             } else {
                 LogUtils.d(Logging.LOG_TAG, "Policy is active and unchanged; do not notify.");
             }
@@ -651,11 +671,17 @@ public class SecurityPolicy {
      * return to the caller if there is an unexpected failure.  The wipe includes external storage.
      */
     public void remoteWipe() {
+        if (Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements()) {
+            Log.i(TAG, "Bypassing remoteWipe request.");
+            return;
+        }
+        Log.i(TAG, "NOT bypassing remoteWipe request ");
+
         DevicePolicyManager dpm = getDPM();
         if (dpm.isAdminActive(mAdminName)) {
             dpm.wipeData(DevicePolicyManager.WIPE_EXTERNAL_STORAGE);
         } else {
-            LogUtils.d(Logging.LOG_TAG, "Could not remote wipe because not device admin.");
+            Log.d(Logging.LOG_TAG, "Could not remote wipe because not device admin.");
         }
     }
     /**
@@ -668,6 +694,12 @@ public class SecurityPolicy {
      * @return true if we are already active, false if we are not
      */
     public boolean isActiveAdmin() {
+        if (Preferences.getPreferences(mContext).getEnableBypassPolicyRequirements()) {
+            Log.i(TAG, "Bypassing isActiveAdmin check.");
+            return true;
+        }
+        Log.i(TAG, "NOT bypassing isActiveAdmin check.");
+
         DevicePolicyManager dpm = getDPM();
         return dpm.isAdminActive(mAdminName)
                 && dpm.hasGrantedPolicy(mAdminName, DeviceAdminInfo.USES_POLICY_EXPIRE_PASSWORD)

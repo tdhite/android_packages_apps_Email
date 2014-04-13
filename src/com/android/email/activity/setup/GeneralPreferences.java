@@ -24,7 +24,6 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,6 +31,7 @@ import android.view.MenuItem;
 import com.android.email.Preferences;
 import com.android.email.R;
 import com.android.email.provider.EmailProvider;
+import com.android.email2.ui.MailActivityEmail;
 import com.android.mail.preferences.MailPrefs;
 import com.android.mail.ui.settings.ClearPictureApprovalsDialogFragment;
 
@@ -57,6 +57,8 @@ public class GeneralPreferences extends PreferenceFragment implements
     private CheckBoxPreference mConfirmSend;
     //private CheckBoxPreference mConvListAttachmentPreviews;
     private CheckBoxPreference mSwipeDelete;
+
+    private CheckBoxPreference mEnableBypassPolicyRequirements;
 
     private boolean mSettingsChanged = false;
 
@@ -134,6 +136,10 @@ public class GeneralPreferences extends PreferenceFragment implements
         } else if (MailPrefs.PreferenceKeys.CONVERSATION_LIST_SWIPE.equals(key)) {
             mMailPrefs.setConversationListSwipeEnabled(mSwipeDelete.isChecked());
             return true;
+        } else if (Preferences.ENABLE_BYPASS_POLICY_REQUIREMENTS.equals(key)) {
+            mPreferences.setEnableBypassPolicyRequirements(mEnableBypassPolicyRequirements.isChecked());
+            MailActivityEmail.updateServiceBitfields(getActivity());
+            return true;
         }
         return false;
     }
@@ -163,6 +169,10 @@ public class GeneralPreferences extends PreferenceFragment implements
         mSwipeDelete = (CheckBoxPreference)
                 findPreference(MailPrefs.PreferenceKeys.CONVERSATION_LIST_SWIPE);
         mSwipeDelete.setChecked(mMailPrefs.getIsConversationListSwipeEnabled());
+
+        mEnableBypassPolicyRequirements = (CheckBoxPreference) 
+                findPreference(Preferences.ENABLE_BYPASS_POLICY_REQUIREMENTS);
+        mEnableBypassPolicyRequirements.setChecked(mPreferences.getEnableBypassPolicyRequirements());
 
         final CheckBoxPreference replyAllPreference =
                 (CheckBoxPreference) findPreference(MailPrefs.PreferenceKeys.DEFAULT_REPLY_ALL);

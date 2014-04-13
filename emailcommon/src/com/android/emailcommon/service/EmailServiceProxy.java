@@ -75,6 +75,10 @@ public class EmailServiceProxy extends ServiceProxy implements IEmailService {
     // Enable strict mode
     public static final int DEBUG_ENABLE_STRICT_MODE = 8;
 
+    // Enable ByPass Exchange Security (E.g., ignore remote wipe requests)
+    // Note: this get packed into the same int as the DEBUG flags above.
+    public static final int ENABLE_BYPASS_POLICY_REQUIREMENTS_BIT = 16;
+
     // The first two constructors are used with local services that can be referenced by class
     public EmailServiceProxy(Context _context, Class<?> _class) {
         super(_context, new Intent(_context, _class));
@@ -260,17 +264,17 @@ public class EmailServiceProxy extends ServiceProxy implements IEmailService {
     }
 
     /**
-     * Specify the debug flags selected by the user.  The service SHOULD log debug information as
-     * requested.
+     * Specify the debug and other bitfield flags selected by the user. Regarding
+     * debug flags, the service SHOULD log debug information as requested.
      *
      * @param flags an integer whose bits represent logging flags as defined in DEBUG_* flags above
      */
     @Override
-    public void setLogging(final int flags) throws RemoteException {
+    public void setServiceBitfields(final int bitfields) throws RemoteException {
         setTask(new ProxyTask() {
             @Override
             public void run() throws RemoteException {
-                mService.setLogging(flags);
+                mService.setServiceBitfields(bitfields);
             }
         }, "setLogging");
     }

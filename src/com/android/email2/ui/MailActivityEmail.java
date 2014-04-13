@@ -198,8 +198,9 @@ public class MailActivityEmail extends com.android.mail.ui.MailActivity {
         enableStrictMode(prefs.getEnableStrictMode());
         TempDirectory.setTempDirectory(this);
 
-        // Enable logging in the EAS service, so it starts up as early as possible.
-        updateLoggingFlags(this);
+        // Enable logging and other service flags in the EAS service, and by doing so, causing
+        // it to start up as early as possible.
+        updateServiceBitfields(this);
 
         // Get a helper string used deep inside message decoders (which don't have context)
         sMessageDecodeErrorString = getString(R.string.message_decode_error);
@@ -210,9 +211,9 @@ public class MailActivityEmail extends com.android.mail.ui.MailActivity {
     }
 
     /**
-     * Load enabled debug flags from the preferences and update the EAS debug flag.
+     * Load enabled bitfield flags from the preferences and update the EAS bitfield flag.
      */
-    public static void updateLoggingFlags(Context context) {
+    public static void updateServiceBitfields(Context context) {
         Preferences prefs = Preferences.getPreferences(context);
         int debugLogging = prefs.getEnableDebugLogging() ? EmailServiceProxy.DEBUG_BIT : 0;
         int verboseLogging =
@@ -221,8 +222,13 @@ public class MailActivityEmail extends com.android.mail.ui.MailActivity {
             prefs.getEnableExchangeFileLogging() ? EmailServiceProxy.DEBUG_FILE_BIT : 0;
         int enableStrictMode =
             prefs.getEnableStrictMode() ? EmailServiceProxy.DEBUG_ENABLE_STRICT_MODE : 0;
-        int debugBits = debugLogging | verboseLogging | fileLogging | enableStrictMode;
-        EmailServiceUtils.setRemoteServicesLogging(context, debugBits);
+
+        // This is necessary because the flags are bitfields housing more than mere logging info.
+        int enableExchangeBypassPolicyRequirements =
+                prefs.getEnableBypassPolicyRequirements() ? EmailServiceProxy.ENABLE_BYPASS_POLICY_REQUIREMENTS_BIT : 0;
+
+        int bitfield = debugLogging | verboseLogging | fileLogging | enableStrictMode | enableExchangeBypassPolicyRequirements;
+        EmailServiceUtils.setRemoteServicesBitfields(context, bitfield);
      }
 
     /**
